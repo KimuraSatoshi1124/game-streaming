@@ -1,0 +1,2 @@
+入力動画数,対象ゲーム数,除外ゲーム数,結合成功数,結合率,unmatched数,event window完全取得数,event window欠損数,game_category別件数
+14,6,1,13,0.9285714285714286,1,3,10,"{'anomaly_walk': 2, 'other': 2, 'puzzle': 2, 'roguelite': 2, 'simulation_light': 2, 'story_short': 2, 'tower_defense': 1}"
