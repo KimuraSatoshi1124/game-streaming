@@ -1,0 +1,8 @@
+steam_appid,canonical_game_title,search_keywords,game_category,indie_flag,pvp_flag,publisher_type,release_date,note
+120001,Whispering Rooms,"whispering rooms|whispering room game",story_short,true,false,indie,2024-03-12,Short narrative mystery
+120002,Gridmancer Mini,"gridmancer mini|gridmancer",puzzle,true,false,indie,2023-11-05,Logic puzzle title
+120003,Hallway Shift,"hallway shift|anomaly hallway",anomaly_walk,true,false,indie,2024-08-20,Spot-the-anomaly walking sim
+120004,Tiny Bastion,"tiny bastion|tiny bastion td",tower_defense,true,false,indie,2022-09-18,Compact tower defense
+120005,Ruin Loop,"ruin loop|ruinloop roguelite",roguelite,true,false,indie,2025-01-16,Action roguelite
+120006,Cozy Workshop,"cozy workshop|workshop sim",simulation_light,true,false,indie,2023-06-01,Light crafting simulation
+120007,Big Arena 2099,"big arena 2099",other,false,true,major,2024-02-02,Excluded AAA PvP sample
