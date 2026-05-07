@@ -1,7 +1,5 @@
-canonical_game_title,steam_appid
-Whispering Rooms,120001
-Gridmancer Mini,120002
-Hallway Shift,120003
-Tiny Bastion,120004
-Ruin Loop,120005
-Cozy Workshop,120006
+game_title,steam_appid,case_group,category
+Suika Game,,suika_multiplatform,puzzle
+The Exit 8,2653790.0,exit8_steam,anomaly_walk
+The Closing Shift,1843090.0,chillas_art,story_short
+Big Arena 2099,120007.0,excluded_major_pvp,other

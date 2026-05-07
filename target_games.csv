@@ -1,8 +1,5 @@
-steam_appid,canonical_game_title,search_keywords,game_category,indie_flag,pvp_flag,publisher_type,release_date,note
-120001,Whispering Rooms,"whispering rooms|whispering room game",story_short,true,false,indie,2024-03-12,Short narrative mystery
-120002,Gridmancer Mini,"gridmancer mini|gridmancer",puzzle,true,false,indie,2023-11-05,Logic puzzle title
-120003,Hallway Shift,"hallway shift|anomaly hallway",anomaly_walk,true,false,indie,2024-08-20,Spot-the-anomaly walking sim
-120004,Tiny Bastion,"tiny bastion|tiny bastion td",tower_defense,true,false,indie,2022-09-18,Compact tower defense
-120005,Ruin Loop,"ruin loop|ruinloop roguelite",roguelite,true,false,indie,2025-01-16,Action roguelite
-120006,Cozy Workshop,"cozy workshop|workshop sim",simulation_light,true,false,indie,2023-06-01,Light crafting simulation
-120007,Big Arena 2099,"big arena 2099",other,false,true,major,2024-02-02,Excluded AAA PvP sample
+game_title,steam_appid,case_group,category,platform_notes,include_flag,exclusion_reason,primary_platform,available_platforms,steam_observable_flag,mobile_observable_flag,console_observable_flag,sales_data_type,search_keywords,indie_flag,pvp_flag,publisher_type,release_date,note
+Suika Game,,suika_multiplatform,puzzle,"Nintendo Switch/iOS/Android/Apple Arcade; not Steam-centered",true,not_steam_observable,Nintendo Switch,"Nintendo Switch|iOS|Android|Apple Arcade",false,true,true,public_download_report,"suika game|watermelon game|スイカゲーム",true,false,indie,2021-12-09,Multi-platform case; use manual public/download/mobile indicators
+The Exit 8,2653790,exit8_steam,anomaly_walk,Steam observable PC release,true,,Steam,"Steam|Nintendo Switch|PlayStation|Xbox",true,false,true,steam_review_proxy,"the exit 8|exit 8|８番出口",true,false,indie,2023-11-29,Steam-centered anomaly walking case
+The Closing Shift,1843090,chillas_art,story_short,Steam observable Chilla's Art title,true,,Steam,Steam,true,false,false,steam_review_proxy,"the closing shift|closing shift|閉店事件",true,false,indie,2022-03-19,Chilla's Art narrative horror case
+Big Arena 2099,120007,excluded_major_pvp,other,Excluded AAA PvP sample,false,major_publisher_or_pvp,Steam,Steam,true,false,false,unknown,big arena 2099,false,true,major,2024-02-02,Excluded quality-control sample

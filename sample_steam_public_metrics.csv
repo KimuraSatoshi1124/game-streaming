@@ -1,0 +1,3 @@
+appid,date,review_count_total,positive_review_count,negative_review_count,review_score_percent,current_players,peak_players_24h,followers,source_url,collected_at,notes
+2653790,2024-01-15,12000,11280,720,94,820,3100,,https://store.steampowered.com/app/2653790,2024-01-15T12:00:00Z,sample Steam public snapshot
+1843090,2024-01-18,5200,4680,520,90,240,900,,https://store.steampowered.com/app/1843090,2024-01-18T12:00:00Z,sample Steam public snapshot

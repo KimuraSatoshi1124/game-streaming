@@ -1,0 +1,3 @@
+game_title,date,reported_sales_or_downloads,reported_revenue,platform,source_url,source_type,notes
+Suika Game,2023-10-05,1000000,,Nintendo Switch,https://example.com/suika-1m,official_announcement,Sample placeholder for public download milestone
+Suika Game,2024-01-10,,5000000,iOS,https://example.com/suika-ios-estimate,mobile_revenue_estimate,Sample placeholder for mobile revenue estimate

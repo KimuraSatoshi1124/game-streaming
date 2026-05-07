@@ -1,2 +1,3 @@
-steam_appid,canonical_game_title,search_keywords,game_category,indie_flag,pvp_flag,publisher_type,release_date,note
-120007,Big Arena 2099,big arena 2099,other,False,True,major,2024-02-02,Excluded AAA PvP sample
+game_title,steam_appid,case_group,category,platform_notes,include_flag,exclusion_reason,primary_platform,available_platforms,steam_observable_flag,mobile_observable_flag,console_observable_flag,sales_data_type,search_keywords,indie_flag,pvp_flag,publisher_type,release_date,note
+Suika Game,,suika_multiplatform,puzzle,Nintendo Switch/iOS/Android/Apple Arcade; not Steam-centered,True,missing_steam_appid;not_steam_observable,Nintendo Switch,Nintendo Switch|iOS|Android|Apple Arcade,False,True,True,public_download_report,suika game|watermelon game|スイカゲーム,True,False,indie,2021-12-09,Multi-platform case; use manual public/download/mobile indicators
+Big Arena 2099,120007.0,excluded_major_pvp,other,Excluded AAA PvP sample,False,indie_flag_not_true;pvp_flag_true;publisher_type_major;include_flag_not_true;major_publisher_or_pvp,Steam,Steam,True,False,False,unknown,big arena 2099,False,True,major,2024-02-02,Excluded quality-control sample
