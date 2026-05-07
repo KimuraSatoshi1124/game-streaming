@@ -123,6 +123,70 @@ python run_pipeline.py
 - `sample_steam_public_metrics.csv`（または `collect_steam_public_metrics.py --fetch-live` を利用）
 - `manual_sales_events.csv`
 
+
+## 実データ取得モード
+
+サンプルCSVではなく実際の公開API/エンドポイントから取得する場合は、`run_pipeline.py` の source オプションを切り替えます。
+
+### Steamのみ実取得する
+Steam reviews endpoint と Steam current players API はAPIキーなしで取得できます。以下はSteamレビュー直近ページとSteam公開指標を実取得し、YouTube/Twitchは手元CSVまたはサンプルのまま使う例です。
+
+```bash
+python run_pipeline.py \
+  --steam-reviews-source api \
+  --max-steam-review-pages 5 \
+  --steam-public-source api
+```
+
+注意: SteamレビューAPIから取得できるレビューはページング範囲に依存します。過去全期間の日別系列を厳密に作る場合は、十分なページ数を指定するか、別途蓄積済みCSVを `--steam-reviews-source csv --steam-reviews-raw <path>` で渡してください。
+
+### YouTubeを実取得する
+YouTube Data API v3 のAPIキーを `YOUTUBE_API_KEY` に設定してから実行します。検索クエリは `target_games.csv` の `search_keywords` をゲーム起点で利用します。
+
+```bash
+export YOUTUBE_API_KEY="<your_api_key>"
+python run_pipeline.py \
+  --youtube-source api \
+  --youtube-published-after 2023-01-01T00:00:00Z \
+  --max-videos-per-game 25
+```
+
+### Twitchを実取得する
+Twitch Helix API の `TWITCH_CLIENT_ID` と `TWITCH_CLIENT_SECRET` を設定してから実行します。ゲームカテゴリ検索後、該当カテゴリのarchive VODを取得します。
+
+```bash
+export TWITCH_CLIENT_ID="<your_client_id>"
+export TWITCH_CLIENT_SECRET="<your_client_secret>"
+python run_pipeline.py \
+  --twitch-source api \
+  --max-twitch-vods-per-game 25
+```
+
+### 全体を実取得寄りで実行する
+YouTube/Twitchの認証情報がある場合は、以下のように同時に切り替えられます。
+
+```bash
+python run_pipeline.py \
+  --steam-reviews-source api \
+  --max-steam-review-pages 5 \
+  --steam-public-source api \
+  --youtube-source api \
+  --twitch-source api
+```
+
+### 既存の実データCSVを使う
+APIで直接取得せず、外部で作成したCSVを投入する場合は `csv` source を使います。
+
+```bash
+python run_pipeline.py \
+  --steam-reviews-source csv --steam-reviews-raw steam_reviews_raw.csv \
+  --steam-public-source csv --steam-public-metrics-input steam_public_metrics_raw.csv \
+  --youtube-source csv --youtube-raw-input youtube_raw.csv \
+  --twitch-source csv --twitch-raw-input twitch_raw.csv
+```
+
+`youtube_raw.csv` と `twitch_raw.csv` は `platform, channel_name, title, raw_game_title, published_at, view_count, url` 列を持つ必要があります。
+
 ## 注意: 因果効果を断定しない
 本パイプラインは、実況・配信露出と公開指標の時系列的な共変動を探索するためのものです。広告、セール、アップデート、SNS拡散、ランキング掲載、プラットフォーム差など多くの交絡要因があるため、分析結果から因果効果は断定しません。
 

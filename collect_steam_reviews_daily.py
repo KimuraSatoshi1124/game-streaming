@@ -114,11 +114,12 @@ def collect_steam_reviews_daily(
     raw_reviews_path: str = "sample_steam_reviews_raw.csv",
     output_path: str = "steam_reviews_daily.csv",
     fetch_live: bool = False,
+    max_pages_per_app: int = 3,
 ) -> pd.DataFrame:
     target_games = pd.read_csv(target_games_path)
     steam_games = target_games[target_games["steam_observable_flag"].map(truthy)].copy()
     if fetch_live:
-        raw_reviews = collect_live_reviews(steam_games)
+        raw_reviews = collect_live_reviews(steam_games, max_pages_per_app=max_pages_per_app)
     else:
         raw_reviews = pd.read_csv(raw_reviews_path)
     daily = aggregate_reviews(raw_reviews, steam_games)
@@ -132,5 +133,6 @@ if __name__ == "__main__":
     parser.add_argument("--raw-reviews", default="sample_steam_reviews_raw.csv")
     parser.add_argument("--output", default="steam_reviews_daily.csv")
     parser.add_argument("--fetch-live", action="store_true")
+    parser.add_argument("--max-pages-per-app", type=int, default=3)
     args = parser.parse_args()
-    collect_steam_reviews_daily(args.target_games, args.raw_reviews, args.output, args.fetch_live)
+    collect_steam_reviews_daily(args.target_games, args.raw_reviews, args.output, args.fetch_live, args.max_pages_per_app)

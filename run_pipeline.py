@@ -1,10 +1,12 @@
+import argparse
+
 import pandas as pd
 
 from collect_steam_public_metrics import collect_steam_public_metrics
 from collect_steam_reviews_daily import collect_steam_reviews_daily
 from event_study import build_category_event_summary, build_mapping, create_event_window, prepare_target_games
-from twitch_vod_metadata import build_twitch_metadata
-from youtube_videos import build_youtube_videos
+from twitch_vod_metadata import build_twitch_metadata, collect_twitch_api
+from youtube_videos import build_youtube_videos, collect_youtube_api
 
 
 def normalize_date_column(df: pd.DataFrame, column: str) -> pd.Series:
@@ -73,6 +75,8 @@ def make_case_study_timeseries(
     appid_to_title = target_games.dropna(subset=["steam_appid"])[["steam_appid", "game_title"]].copy()
     appid_to_title["appid"] = pd.to_numeric(appid_to_title["steam_appid"], errors="coerce")
     metrics["appid"] = pd.to_numeric(metrics["appid"], errors="coerce")
+    if "game_title" in metrics.columns:
+        metrics = metrics.drop(columns=["game_title"])
     metrics = metrics.merge(appid_to_title[["appid", "game_title"]], on="appid", how="left")
     metrics = metrics[["game_title", "date", "current_players", "peak_players_24h"]]
 
@@ -171,58 +175,137 @@ def make_data_quality_report(
     return pd.DataFrame(rows)
 
 
-def main():
-    included_games, excluded_games, target_games = prepare_target_games("target_games.csv")
+def raw_path_for_source(source: str, sample_path: str, csv_path: str, api_path: str) -> str:
+    if source == "sample":
+        return sample_path
+    if source == "csv":
+        return csv_path
+    if source == "api":
+        return api_path
+    raise ValueError(f"Unsupported source: {source}")
+
+
+def run_pipeline(args: argparse.Namespace) -> pd.DataFrame:
+    included_games, excluded_games, target_games = prepare_target_games(args.target_games)
     build_mapping(target_games)
 
     reviews_daily = collect_steam_reviews_daily(
-        target_games_path="target_games.csv",
-        raw_reviews_path="sample_steam_reviews_raw.csv",
-        output_path="steam_reviews_daily.csv",
-        fetch_live=False,
+        target_games_path=args.target_games,
+        raw_reviews_path=args.steam_reviews_raw,
+        output_path=args.steam_reviews_daily_output,
+        fetch_live=args.steam_reviews_source == "api",
+        max_pages_per_app=args.max_steam_review_pages,
     )
     public_metrics = collect_steam_public_metrics(
-        target_games_path="target_games.csv",
-        sample_metrics_path="sample_steam_public_metrics.csv",
-        output_path="steam_public_metrics.csv",
-        fetch_live=False,
+        target_games_path=args.target_games,
+        sample_metrics_path=args.steam_public_metrics_input,
+        output_path=args.steam_public_metrics_output,
+        fetch_live=args.steam_public_source == "api",
     )
 
-    youtube, _ = build_youtube_videos("target_games.csv", "sample_youtube_videos.csv", "youtube_videos.csv", max_videos_per_game=20)
-    twitch = build_twitch_metadata("target_games.csv", "sample_twitch_vod_metadata.csv", "twitch_vod_metadata.csv")
-    manual_sales = pd.read_csv("manual_sales_events.csv")
+    youtube_raw_input = raw_path_for_source(args.youtube_source, args.sample_youtube_input, args.youtube_raw_input, args.youtube_api_raw_output)
+    if args.youtube_source == "api":
+        collect_youtube_api(
+            args.target_games,
+            args.youtube_api_raw_output,
+            args.youtube_api_key,
+            args.max_videos_per_game,
+            args.youtube_published_after,
+            args.youtube_published_before,
+        )
+    youtube, _ = build_youtube_videos(args.target_games, youtube_raw_input, args.youtube_output, max_videos_per_game=args.max_videos_per_game)
+
+    twitch_raw_input = raw_path_for_source(args.twitch_source, args.sample_twitch_input, args.twitch_raw_input, args.twitch_api_raw_output)
+    if args.twitch_source == "api":
+        collect_twitch_api(
+            args.target_games,
+            args.twitch_api_raw_output,
+            args.twitch_client_id,
+            args.twitch_client_secret,
+            args.max_twitch_vods_per_game,
+        )
+    twitch = build_twitch_metadata(args.target_games, twitch_raw_input, args.twitch_output)
+    manual_sales = pd.read_csv(args.manual_sales_events)
 
     case_timeseries = make_case_study_timeseries(target_games, youtube, twitch, reviews_daily, public_metrics, manual_sales)
-    case_timeseries.to_csv("case_study_timeseries.csv", index=False)
+    case_timeseries.to_csv(args.case_study_timeseries_output, index=False)
 
     streams = pd.concat([youtube, twitch], ignore_index=True)
-    event_study = create_event_window(streams, reviews_daily, public_metrics, included_games, window=14)
-    event_study.to_csv("event_study_dataset.csv", index=False)
+    event_study = create_event_window(streams, reviews_daily, public_metrics, included_games, window=args.event_window_days)
+    event_study.to_csv(args.event_study_output, index=False)
 
     category_summary = build_category_event_summary(event_study)
-    category_summary.to_csv("category_event_summary.csv", index=False)
+    category_summary.to_csv(args.category_event_summary_output, index=False)
 
     data_quality = make_data_quality_report(target_games, youtube, twitch, reviews_daily, public_metrics, event_study)
-    data_quality.to_csv("data_quality_report.csv", index=False)
+    data_quality.to_csv(args.data_quality_report_output, index=False)
 
     print("Pipeline completed")
     print("Outputs:")
     for output in [
         "excluded_games.csv",
         "game_title_mapping.csv",
-        "steam_reviews_daily.csv",
-        "steam_public_metrics.csv",
-        "youtube_videos.csv",
-        "twitch_vod_metadata.csv",
-        "case_study_timeseries.csv",
-        "event_study_dataset.csv",
-        "category_event_summary.csv",
-        "data_quality_report.csv",
+        args.steam_reviews_daily_output,
+        args.steam_public_metrics_output,
+        args.youtube_output,
+        args.twitch_output,
+        args.case_study_timeseries_output,
+        args.event_study_output,
+        args.category_event_summary_output,
+        args.data_quality_report_output,
         "unmatched_game_titles.csv",
     ]:
         print(f"- {output}")
     print("\nData quality report:")
     print(data_quality.to_string(index=False))
+    return data_quality
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Run the indie streaming × public metrics pipeline.")
+    parser.add_argument("--target-games", default="target_games.csv")
+    parser.add_argument("--manual-sales-events", default="manual_sales_events.csv")
+    parser.add_argument("--event-window-days", type=int, default=14)
+
+    parser.add_argument("--steam-reviews-source", choices=["sample", "csv", "api"], default="sample")
+    parser.add_argument("--steam-reviews-raw", default="sample_steam_reviews_raw.csv")
+    parser.add_argument("--steam-reviews-daily-output", default="steam_reviews_daily.csv")
+    parser.add_argument("--max-steam-review-pages", type=int, default=3)
+
+    parser.add_argument("--steam-public-source", choices=["sample", "csv", "api"], default="sample")
+    parser.add_argument("--steam-public-metrics-input", default="sample_steam_public_metrics.csv")
+    parser.add_argument("--steam-public-metrics-output", default="steam_public_metrics.csv")
+
+    parser.add_argument("--youtube-source", choices=["sample", "csv", "api"], default="sample")
+    parser.add_argument("--sample-youtube-input", default="sample_youtube_videos.csv")
+    parser.add_argument("--youtube-raw-input", default="youtube_raw.csv")
+    parser.add_argument("--youtube-api-raw-output", default="youtube_api_raw.csv")
+    parser.add_argument("--youtube-output", default="youtube_videos.csv")
+    parser.add_argument("--youtube-api-key", default=None)
+    parser.add_argument("--youtube-published-after", default=None)
+    parser.add_argument("--youtube-published-before", default=None)
+    parser.add_argument("--max-videos-per-game", type=int, default=20)
+
+    parser.add_argument("--twitch-source", choices=["sample", "csv", "api"], default="sample")
+    parser.add_argument("--sample-twitch-input", default="sample_twitch_vod_metadata.csv")
+    parser.add_argument("--twitch-raw-input", default="twitch_raw.csv")
+    parser.add_argument("--twitch-api-raw-output", default="twitch_api_raw.csv")
+    parser.add_argument("--twitch-output", default="twitch_vod_metadata.csv")
+    parser.add_argument("--twitch-client-id", default=None)
+    parser.add_argument("--twitch-client-secret", default=None)
+    parser.add_argument("--max-twitch-vods-per-game", type=int, default=20)
+
+    parser.add_argument("--case-study-timeseries-output", default="case_study_timeseries.csv")
+    parser.add_argument("--event-study-output", default="event_study_dataset.csv")
+    parser.add_argument("--category-event-summary-output", default="category_event_summary.csv")
+    parser.add_argument("--data-quality-report-output", default="data_quality_report.csv")
+    return parser
+
+
+def main():
+    parser = build_parser()
+    args = parser.parse_args()
+    run_pipeline(args)
 
 
 if __name__ == "__main__":
