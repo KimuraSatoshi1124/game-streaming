@@ -1,3 +1,4 @@
-appid,date,review_count_total,positive_review_count,negative_review_count,review_score_percent,current_players,peak_players_24h,followers,source_url,collected_at,notes
-2653790,2024-01-15,12000,11280,720,94,820,3100,,https://store.steampowered.com/app/2653790,2024-01-15T12:00:00Z,sample Steam public snapshot
-1843090,2024-01-18,5200,4680,520,90,240,900,,https://store.steampowered.com/app/1843090,2024-01-18T12:00:00Z,sample Steam public snapshot
+appid,game_title,date,review_count_total,positive_review_count,negative_review_count,review_score_percent,current_players,peak_players_24h,followers,source_url,collected_at,notes
+2653790,The Exit 8,2026-05-07,10715,9985,730,8,39,,,https://store.steampowered.com/app/2653790,2026-05-07T01:41:20.662781+00:00,SteamDB followers and 24h peak are not scraped by default; provide sample/manual metrics if needed
+1843090,The Closing Shift,2026-05-07,3085,2710,375,8,6,,,https://store.steampowered.com/app/1843090,2026-05-07T01:41:21.410090+00:00,SteamDB followers and 24h peak are not scraped by default; provide sample/manual metrics if needed
+120007,Big Arena 2099,2026-05-07,0,0,0,0,,,,https://store.steampowered.com/app/120007,2026-05-07T01:41:22.432492+00:00,current_players_unavailable:HTTPError; SteamDB followers and 24h peak are not scraped by default; provide sample/manual metrics if needed

@@ -1,5 +1,5 @@
 game_title,steam_appid,case_group,has_youtube_data,has_twitch_data,has_review_daily_data,has_public_metrics_data,event_window_coverage_rate,missing_days,notes
 Suika Game,,suika_multiplatform,True,True,False,False,,,not Steam-centered; use manual/public multi-platform indicators; no steam_appid; excluded from event_study; not_steam_observable
-The Exit 8,2653790.0,exit8_steam,True,True,True,True,1.0,0,SteamDB followers not scraped by default; provide manual/sample metrics if available
-The Closing Shift,1843090.0,chillas_art,True,True,True,True,0.9137931034482758,5,SteamDB followers not scraped by default; provide manual/sample metrics if available
-Big Arena 2099,120007.0,excluded_major_pvp,True,True,False,False,,,major_publisher_or_pvp; SteamDB followers not scraped by default; provide manual/sample metrics if available; public Steam metrics unavailable or not collected
+The Exit 8,2653790.0,exit8_steam,True,True,True,True,0.0,58,SteamDB followers not scraped by default; provide manual/sample metrics if available
+The Closing Shift,1843090.0,chillas_art,True,True,True,True,0.0,58,SteamDB followers not scraped by default; provide manual/sample metrics if available
+Big Arena 2099,120007.0,excluded_major_pvp,True,True,False,True,,,major_publisher_or_pvp; SteamDB followers not scraped by default; provide manual/sample metrics if available
